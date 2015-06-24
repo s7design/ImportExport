@@ -6,18 +6,24 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Output::HTML::ImportExportLayoutCheckbox;
+package Kernel::Output::HTML::ImportExport::LayoutSelection;
 
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::System::Log',
+    'Kernel::Output::HTML::Layout',
+    'Kernel::System::Web::Request',
+);
+
 =head1 NAME
 
-Kernel::Output::HTML::ImportExportLayoutCheckbox - layout backend module
+Kernel::Output::HTML::ImportExport::LayoutSelection - layout backend module
 
 =head1 SYNOPSIS
 
-All layout functions for checkbox elements in import/export.
+All layout functions for selection elements
 
 =over 4
 
@@ -27,7 +33,7 @@ All layout functions for checkbox elements in import/export.
 
 create an object
 
-    $BackendObject = Kernel::Output::HTML::ImportExportLayoutCheckbox->new(
+    $BackendObject = Kernel::Output::HTML::ImportExport::LayoutSelection->new(
         %Param,
     );
 
@@ -39,11 +45,6 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for my $Object (qw(ConfigObject LogObject MainObject ParamObject LayoutObject)) {
-        $Self->{$Object} = $Param{$Object} || die "Got no $Object!";
-    }
 
     return $Self;
 }
@@ -65,19 +66,36 @@ sub FormInputCreate {
 
     # check needed stuff
     if ( !$Param{Item} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need Item!',
+            Message  => 'Need Item!'
         );
         return;
     }
 
+    # set default value
     $Param{Prefix} ||= '';
+    $Param{Value}  ||= $Param{Item}->{Input}->{ValueDefault};
 
-    my $Checked = $Param{Value} ? 'checked="checked"' : '';
+    if ( $Param{Value} && $Param{Value} =~ m{ ##### }xms ) {
+        my @Values = split '#####', $Param{Value};
+        $Param{Value} = \@Values;
+    }
 
-    return
-        qq{<input id="$Param{Prefix}$Param{Item}->{Key}" type="checkbox" name="$Param{Prefix}$Param{Item}->{Key}" $Checked />};
+    # generate option string
+    my $String = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
+        ID           => $Param{Prefix} . $Param{Item}->{Key},
+        Class        => $Param{Class},
+        Name         => $Param{Prefix} . $Param{Item}->{Key},
+        Data         => $Param{Item}->{Input}->{Data} || {},
+        SelectedID   => $Param{Value},
+        Translation  => $Param{Item}->{Input}->{Translation},
+        PossibleNone => $Param{Item}->{Input}->{PossibleNone},
+        Multiple     => $Param{Item}->{Input}->{Multiple},
+        Size         => $Param{Item}->{Input}->{Size},
+    );
+
+    return $String;
 }
 
 =item FormDataGet()
@@ -96,9 +114,9 @@ sub FormDataGet {
 
     # check needed stuff
     if ( !$Param{Item} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need Item!',
+            Message  => 'Need Item!'
         );
         return;
     }
@@ -106,9 +124,17 @@ sub FormDataGet {
     $Param{Prefix} ||= '';
 
     # get form data
-    my $FormData = $Self->{ParamObject}->GetParam(
+    my @FormDatas = $Kernel::OM->Get('Kernel::System::Web::Request')->GetArray(
         Param => $Param{Prefix} . $Param{Item}->{Key},
     );
+
+    my $FormData = join '#####', @FormDatas;
+
+    return $FormData if $FormData;
+    return $FormData if !$Param{Item}->{Input}->{Required};
+
+    # set invalid param
+    $Param{Item}->{Form}->{Invalid} = 1;
 
     return $FormData;
 }

@@ -6,14 +6,20 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Output::HTML::ImportExportLayoutText;
+package Kernel::Output::HTML::ImportExport::LayoutText;
 
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::System::Log',
+    'Kernel::System::Web::Request',
+    'Kernel::Output::HTML::Layout',
+);
+
 =head1 NAME
 
-Kernel::Output::HTML::ImportExportLayoutText - layout backend module
+Kernel::Output::HTML::ImportExport::LayoutText - layout backend module
 
 =head1 SYNOPSIS
 
@@ -27,7 +33,7 @@ All layout functions for text elements
 
 create an object
 
-    $BackendObject = Kernel::Output::HTML::ImportExportLayoutText->new(
+    $BackendObject = Kernel::Output::HTML::ImportExport::LayoutText->new(
         %Param,
     );
 
@@ -39,11 +45,6 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for my $Object (qw(ConfigObject LogObject MainObject ParamObject LayoutObject)) {
-        $Self->{$Object} = $Param{$Object} || die "Got no $Object!";
-    }
 
     return $Self;
 }
@@ -65,7 +66,7 @@ sub FormInputCreate {
 
     # check needed stuff
     if ( !$Param{Item} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Item!'
         );
@@ -99,13 +100,16 @@ sub FormInputCreate {
 
     if ($Value) {
 
+        # get layout object
+        my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
         # translate
         if ( $Param{Item}->{Input}->{Translation} ) {
-            $Value = $Self->{LayoutObject}->{LanguageObject}->Get($Value);
+            $Value = $LayoutObject->{LanguageObject}->Translate($Value);
         }
 
         # transform ascii to html
-        $Value = $Self->{LayoutObject}->Ascii2Html(
+        $Value = $LayoutObject->Ascii2Html(
             Text           => $Value,
             HTMLResultMode => 1,
         );
@@ -139,7 +143,7 @@ sub FormDataGet {
 
     # check needed stuff
     if ( !$Param{Item} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Item!'
         );
@@ -149,7 +153,7 @@ sub FormDataGet {
     $Param{Prefix} ||= '';
 
     # get form data
-    my $FormData = $Self->{ParamObject}->GetParam(
+    my $FormData = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam(
         Param => $Param{Prefix} . $Param{Item}->{Key},
     );
 
