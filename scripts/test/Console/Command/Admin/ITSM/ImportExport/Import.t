@@ -1,5 +1,4 @@
 # --
-# Admin/ITSM/ImportExport/Import.t - command tests
 # Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -36,7 +35,7 @@ my $TemplateID = $ImportExportObject->TemplateAdd(
     Format  => 'CSV',
     Name    => 'Template' . $HelperObject->GetRandomID(),
     ValidID => 1,
-    Comment => 'Comment',       # (optional)
+    Comment => 'Comment',                                   # (optional)
     UserID  => 1,
 );
 
@@ -57,11 +56,11 @@ my $HardwareConfigItemID = $ConfigItemDataRef->{ItemID};
 
 # get object data for test template
 my %TemplateRef = (
-    'ClassID'   => $HardwareConfigItemID,
-    'CountMax'  => 10,
+    'ClassID'  => $HardwareConfigItemID,
+    'CountMax' => 10,
 );
 my $Success = $ImportExportObject->ObjectDataSave(
-    TemplateID => $TemplateID ,
+    TemplateID => $TemplateID,
     ObjectData => \%TemplateRef,
     UserID     => 1,
 );
@@ -73,10 +72,10 @@ $Self->True(
 
 # add the format data of the test template
 my %FormatData = (
-        Charset                 => 'UTF-8',
-        ColumnSeparator         => 'Comma',
-        IncludeColumnHeaders    => 1,
-        );
+    Charset              => 'UTF-8',
+    ColumnSeparator      => 'Comma',
+    IncludeColumnHeaders => 1,
+);
 $Success = $ImportExportObject->FormatDataSave(
     TemplateID => $TemplateID,
     FormatData => \%FormatData,
@@ -90,8 +89,8 @@ $Self->True(
 
 # save the search data of a template
 my %SearchData = (
-        Name  => 'TestConfigItem*',
-        );
+    Name => 'TestConfigItem*',
+);
 $Success = $ImportExportObject->SearchDataSave(
     TemplateID => $TemplateID,
     SearchData => \%SearchData,
@@ -99,14 +98,14 @@ $Success = $ImportExportObject->SearchDataSave(
 );
 
 # add mapping data for test template
-for my $ObjectDataValue ( qw( Name DeplState InciState ) ){
+for my $ObjectDataValue (qw( Name DeplState InciState )) {
 
     my $MappingID = $ImportExportObject->MappingAdd(
         TemplateID => $TemplateID,
         UserID     => 1,
     );
 
-    my %MappingObjectData = ( Key  => $ObjectDataValue );
+    my %MappingObjectData = ( Key => $ObjectDataValue );
     my $Success = $ImportExportObject->MappingObjectDataSave(
         MappingID         => $MappingID,
         MappingObjectData => \%MappingObjectData,
@@ -120,10 +119,12 @@ for my $ObjectDataValue ( qw( Name DeplState InciState ) ){
 }
 
 # make directory for export file
-my $SourcePath = $Kernel::OM->Get('Kernel::Config')->Get('Home') . "/scripts/test/sample/ImportExport/TemplateExport.csv";
+my $SourcePath
+    = $Kernel::OM->Get('Kernel::Config')->Get('Home') . "/scripts/test/sample/ImportExport/TemplateExport.csv";
 
 # test command with wrong template number
-$ExitCode = $CommandObject->Execute('--template-number', $HelperObject->GetRandomID() , $SourcePath . 'TemplateExport.csv' );
+$ExitCode
+    = $CommandObject->Execute( '--template-number', $HelperObject->GetRandomID(), $SourcePath . 'TemplateExport.csv' );
 
 $Self->Is(
     $ExitCode,
@@ -132,7 +133,7 @@ $Self->Is(
 );
 
 # test command without Source argument
-$ExitCode = $CommandObject->Execute('--template-number', $TemplateID );
+$ExitCode = $CommandObject->Execute( '--template-number', $TemplateID );
 
 $Self->Is(
     $ExitCode,
@@ -141,7 +142,7 @@ $Self->Is(
 );
 
 # test command with --template-number option and Source argument
-$ExitCode = $CommandObject->Execute( '--template-number',  $TemplateID, $SourcePath );
+$ExitCode = $CommandObject->Execute( '--template-number', $TemplateID, $SourcePath );
 
 $Self->Is(
     $ExitCode,
@@ -151,9 +152,9 @@ $Self->Is(
 
 # get config item object
 my $ConfigItemObject = $Kernel::OM->Get('Kernel::System::ITSMConfigItem');
-my $ConfigItemIDs = $ConfigItemObject->ConfigItemSearchExtended(
-        Name         => 'TestConfigItem*'
-        );
+my $ConfigItemIDs    = $ConfigItemObject->ConfigItemSearchExtended(
+    Name => 'TestConfigItem*'
+);
 my $NumConfigItemImported = scalar @{$ConfigItemIDs};
 
 # check if the config items are imported
