@@ -72,7 +72,7 @@ sub Run {
 
     $Self->Print( "<green>" . ( '-' x 69 ) . "</green>\n" );
     $Self->Print("<green>Success: $Result->{Success}</green>\n");
-    $Self->Print("<green>Failed : $Result->{Failed}</green>\n");
+    $Self->PrintError("Failed : $Result->{Failed}.\n");
 
     my $DestinationFile = $Self->GetArgument('destination');
 
