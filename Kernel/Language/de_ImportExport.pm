@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -60,7 +60,7 @@ sub Data {
     # SysConfig
     $Self->{Translation}->{'Format backend module registration for the import/export module.'} =
         'Format-Backend Modul-Registration des Import/Export Moduls.';
-    $Self->{Translation}->{'Import and export object information.'} = 'Impotieren und Exportieren von Objekt-Informationen.';
+    $Self->{Translation}->{'Import and export object information.'} = 'Importieren und Exportieren von Objekt-Informationen.';
     $Self->{Translation}->{'Import/Export'} = 'Import/Export';
 
 }

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -28,8 +28,8 @@ sub Data {
     $Self->{Translation}->{'Import summary for'} = '';
     $Self->{Translation}->{'Imported records'} = '';
     $Self->{Translation}->{'Exported records'} = '';
-    $Self->{Translation}->{'Records'} = '';
-    $Self->{Translation}->{'Skipped'} = '';
+    $Self->{Translation}->{'Records'} = 'Záznamů';
+    $Self->{Translation}->{'Skipped'} = 'Přeskočeno';
 
     # Template: AdminImportExport
     $Self->{Translation}->{'Import/Export Management'} = 'Import/Export Správa';
@@ -51,9 +51,9 @@ sub Data {
     $Self->{Translation}->{'Restrict export per search'} = 'Omezit Export vyhledáváním';
     $Self->{Translation}->{'Import information'} = 'Informace o Importu';
     $Self->{Translation}->{'Source File'} = 'Zdrojový Soubor';
-    $Self->{Translation}->{'Success'} = '';
-    $Self->{Translation}->{'Failed'} = '';
-    $Self->{Translation}->{'Duplicate names'} = '';
+    $Self->{Translation}->{'Success'} = 'Úspěšně';
+    $Self->{Translation}->{'Failed'} = 'Neúspěšně';
+    $Self->{Translation}->{'Duplicate names'} = 'Duplicitní jména';
     $Self->{Translation}->{'Last processed line number of import file'} = '';
     $Self->{Translation}->{'Ok'} = 'Ok';
 
